@@ -74,6 +74,7 @@ class Rating(db.Model):
     def __repr__(self):
         return '<reviewer: %r, outfit: %r,  rating: %r, %r>' % (self.reviewer_id, self.reviewed_outfit, self.score, self.comment)
 
+<<<<<<< Updated upstream
 # /users/ is the endpoint to create a user
 #
 # POST { id: 'facebook user id'}
