@@ -88,6 +88,7 @@ class Rating(db.Model):
     def __init__(self, outfit):
         self.assigned = False
         self.reviewed_outfit = outfit
+        outfit.add_rating(self)
 
 
     def __repr__(self):
@@ -143,15 +144,34 @@ def do_outfits(uid):
                     'outfits': map(Outfit.to_dict, user.outfits)
                     })
 
+# POST { 'score': <INT>
+#      , 'comment': <String>
+#      , 'reviewer_id': <String>
+#      }
 @app.route('/outfits/<oid>/ratings/', methods = ['GET','POST'])
 def do_ratings(oid):
     out = db.session.query(Outfit).get(oid)
     if out is None:
         return "No Such outfit: %r" % oid, 300
     if request.method == 'GET':
-        return jsonify({'outfit_id': oid,
+        pass
+    if request.method == 'POST':
+        score = request.json['score']
+        comment = request.json['comment']
+        rev_id = request.json['reviewer_id']
+        r = Rating(out)
+        r.comment = comment
+        r.score = score
+        r.reviewer_id = rev_id
+        db.session.add(out)
+        db.session.add(r)
+        db.session.commit()
+    return jsonify({'outfit_id': oid,
                         'ratings': map(Rating.to_dict, out.ratings)
                         })
+
+
+
 
 
 if __name__ == '__main__':
