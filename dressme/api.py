@@ -127,10 +127,10 @@ def add_user():
 # POST {
 #
 @app.route('/users/<uid>/outfits/', methods = ['GET','POST'])
-def get_outfits(uid):
+def do_outfits(uid):
     user = db.session.query(User).get(uid)
     if user is None:
-        return "No Such user", 300
+        return "No Such user %r" % uid, 300
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
@@ -143,7 +143,15 @@ def get_outfits(uid):
                     'outfits': map(Outfit.to_dict, user.outfits)
                     })
 
-
+@app.route('/outfits/<oid>/ratings/', methods = ['GET','POST'])
+def do_ratings(oid):
+    out = db.session.query(Outfit).get(oid)
+    if out is None:
+        return "No Such outfit: %r" % oid, 300
+    if request.method == 'GET':
+        return jsonify({'outfit_id': oid,
+                        'ratings': map(Rating.to_dict, out.ratings)
+                        })
 
 
 if __name__ == '__main__':
