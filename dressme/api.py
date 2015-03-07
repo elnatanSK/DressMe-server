@@ -1,18 +1,14 @@
 from flask import Flask
 from flask.ext.restful import Api, Resource
+from flask.ext.sqlalchemy import SQLAlchemy
+
+import dressme
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 api = Api(app)
-
-class Hello(Resource):
-    def get(self, id):
-        return "Hello %s!" % id
-
-    def put(self, id):
-        pass
-
-    def delete(self, id):
-        pass
+db = SQLAlchemy(app)
+app.db = db
 
 api.add_resource(Hello, '/hello/<string:id>', endpoint = 'user')
 

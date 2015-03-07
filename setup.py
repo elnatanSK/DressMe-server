@@ -13,5 +13,6 @@ setup(
         packages=find_packages(),
         install_requires=['Flask>=0.10.1',
                           'Flask-RESTful>=0.2.11',
+                          'Flask-SQLAlchemy'
                           ]
         )
