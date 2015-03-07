@@ -36,7 +36,6 @@ class User(db.Model):
                 'rating_queue': map(Rating.to_dict, self.rating_queue)
                 }
 
-
     def __repr__(self):
         return '<User %r: %r, rating_queue = %r>' % (self.user_id,
                 self.outfits, self.rating_queue)
@@ -74,6 +73,7 @@ class Outfit(db.Model):
                 'image': self.image,
                 'ratings': map(Rating.to_dict, self.ratings)
                 }
+
 
 class Rating(db.Model):
     __tablename__ = 'ratings'
@@ -129,6 +129,7 @@ def get_outfits(uid):
         user = db.session.query(User).get(uid)
         if user is None:
             return "No Such user", 300
+        return jsonify(user.to_dict())
 
 
 if __name__ == '__main__':

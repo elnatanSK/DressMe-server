@@ -17,6 +17,19 @@ print u
 r = Rating(o)
 o.add_rating(r)
 
+print "\njson:"
+print r
+print r.to_dict()
+print
+print o
+print o.to_dict()
+print
+print
+print u
+print u.to_dict()
+print
+
+
 db.session.add(u)
 db.session.add(o)
 db.session.add(r)
@@ -40,6 +53,9 @@ db.session.commit()
 print db.session.query(Outfit).all()
 print db.session.query(User).all()
 print db.session.query(Rating).all()
+
+print db.session.query(User).get("matt")
+print db.session.query(User).get("taylor")
 
 #print db.session.query(User).all()
 #
