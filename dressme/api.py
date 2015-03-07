@@ -1,5 +1,6 @@
 from flask import Flask, request, Request
 from flask.ext.sqlalchemy import SQLAlchemy
+import flask.json as json
 
 
 app = Flask(__name__)
@@ -29,6 +30,12 @@ class User(db.Model):
         rating.reviewer_id = self.user_id
         self.rating_queue.append(rating)
 
+    def to_dict(self):
+        return {'user_id': self.user_id,
+                'outfits': map(Outfit.to_dict, self.outfits),
+                'rating_queue': map(Rating.to_dict, self.rating_queue)
+                }
+
 
     def __repr__(self):
         return '<User %r: %r, rating_queue = %r>' % (self.user_id,
@@ -55,6 +62,18 @@ class Outfit(db.Model):
         return '<Outfit owner = %r, id = %r, %r: %r>' % (self.owner_id,
                 self.outfit_id, self.image, self.ratings)
 
+    def to_dict(self):
+        own_id = "<NONE>"
+        out_id = "<NONE>"
+        if self.owner is not None:
+            own_id = self.owner.user_id
+        if self.outfit_id is not None:
+             out_id = self.owner.user_id
+        return {'owner_id': own_id,
+                'outfit_id': out_id,
+                'image': self.image,
+                'ratings': map(Rating.to_dict, self.ratings)
+                }
 
 class Rating(db.Model):
     __tablename__ = 'ratings'
@@ -74,6 +93,21 @@ class Rating(db.Model):
     def __repr__(self):
         return '<reviewer: %r, outfit: %r,  rating: %r, %r>' % (self.reviewer_id, self.reviewed_outfit, self.score, self.comment)
 
+    def to_dict(self):
+        uid = "<NONE>"
+        comment = "<NONE>"
+        score = 0
+        if self.reviewer is not None:
+            uid = self.reviewer.user_id
+        if self.comment is not None:
+            comment = self.comment
+        if self.score is not None:
+            score = self.score
+        return {'reviewer_id': uid,
+                'score': score,
+                'comment': comment
+                }
+
 # /users/ is the endpoint to create a user
 #
 # POST { id: 'facebook user id'}
@@ -88,6 +122,14 @@ def add_user():
         db.session.add(u)
         db.session.commit()
         return "Added %s" % uid, 200
+
+@app.route('/users/<uid>/outfits/', methods = ['GET'])
+def get_outfits(uid):
+    if request.method == 'GET':
+        user = db.session.query(User).get(uid)
+        if user is None:
+            return "No Such user", 300
+
 
 if __name__ == '__main__':
     db.init_app(app)
