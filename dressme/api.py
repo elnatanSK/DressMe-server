@@ -1,4 +1,4 @@
-from flask import Flask, request, Request
+from flask import Flask, request, Request, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 import flask.json as json
 
@@ -67,7 +67,7 @@ class Outfit(db.Model):
         if self.owner is not None:
             own_id = self.owner.user_id
         if self.outfit_id is not None:
-             out_id = self.owner.user_id
+             out_id = self.outfit_id
         return {'owner_id': own_id,
                 'outfit_id': out_id,
                 'image': self.image,
@@ -123,13 +123,27 @@ def add_user():
         db.session.commit()
         return "Added %s" % uid, 200
 
-@app.route('/users/<uid>/outfits/', methods = ['GET'])
+#
+# POST {
+#
+@app.route('/users/<uid>/outfits/', methods = ['GET','POST'])
 def get_outfits(uid):
+    user = db.session.query(User).get(uid)
+    if user is None:
+        return "No Such user", 300
     if request.method == 'GET':
-        user = db.session.query(User).get(uid)
-        if user is None:
-            return "No Such user", 300
-        return jsonify(user.to_dict())
+        pass
+    elif request.method == 'POST':
+        img = request.json['image']
+        o = Outfit(img)
+        user.add_outfit(o)
+        db.session.add(user)
+        db.session.commit()
+    return jsonify({'user_id': uid,
+                    'outfits': map(Outfit.to_dict, user.outfits)
+                    })
+
+
 
 
 if __name__ == '__main__':
