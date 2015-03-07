@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask.ext.restful import Api, Resource
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ class Hello(Resource):
     def delete(self, id):
         pass
 
-api.add_resource(Hello, '/outfits/<string:id>', endpoint = 'user')
+api.add_resource(Hello, '/hello/<string:id>', endpoint = 'user')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
