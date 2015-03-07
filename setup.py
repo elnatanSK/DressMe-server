@@ -4,7 +4,7 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(
-        name='DressMe',
+        name='dressme',
         version='1',
         description='Backend for the DressMe app',
         author='DressMe',
