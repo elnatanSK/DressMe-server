@@ -4,6 +4,7 @@ import flask.json as json
 
 
 application = Flask(__name__)
+application.config['DEBUG'] = True
 application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(application)
 
