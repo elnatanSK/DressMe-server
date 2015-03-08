@@ -163,7 +163,7 @@ def do_rating_queue(uid):
         return "Not such user: %s" % uid, 300
     if request.method == 'GET':
         return jsonify({'reviewer_id': uid,
-            'outfits': map(outfit_dict_for_rating_queue, user.rating_queue)
+            'outfits': map(outfit_dict_for_rating_queue, filter(lambda x: not x.assigned, user.rating_queue))
             })
 
 def outfit_dict_for_rating_queue(rating):
@@ -198,7 +198,7 @@ def do_ratings(oid):
         db.session.add(r)
         db.session.commit()
     return jsonify({'outfit_id': oid,
-        'ratings': map(Rating.to_dict, out.ratings)
+        'ratings': map(Rating.to_dict, filter(lambda r: r.score != 0, out.ratings))
                     })
 
 
