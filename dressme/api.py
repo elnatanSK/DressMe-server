@@ -151,10 +151,10 @@ def do_rating_queue(uid):
         return "Not such user: %s" % uid, 300
     if request.method == 'GET':
         return jsonify({'reviewer_id': uid,
-            'outfits': map(outfit_dict_for_rating, user.rating_queue)
+            'outfits': map(outfit_dict_for_rating_queue, filter(lambda x: not x.assigned, user.rating_queue))
             })
 
-def outfit_dict_for_rating(rating):
+def outfit_dict_for_rating_queue(rating):
     d = rating.outfit_id.to_dict()
     del d['ratings']
     return d
