@@ -3,9 +3,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import flask.json as json
 
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-db = SQLAlchemy(app)
+application = Flask(__name__)
+application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy(application)
 
 
 class User(db.Model):
@@ -113,7 +113,7 @@ class Rating(db.Model):
 #
 # POST { id: 'facebook user id'}
 #
-@app.route('/users/', methods=['POST'])
+@application.route('/users/', methods=['POST'])
 def add_user():
     if request.method == 'POST':
         uid = request.json['id']
@@ -127,7 +127,7 @@ def add_user():
 #
 # POST {
 #
-@app.route('/users/<uid>/outfits/', methods = ['GET','POST'])
+@application.route('/users/<uid>/outfits/', methods = ['GET','POST'])
 def do_outfits(uid):
     user = db.session.query(User).get(uid)
     if user is None:
@@ -144,7 +144,7 @@ def do_outfits(uid):
                     'outfits': map(Outfit.to_dict, user.outfits)
                     })
 
-@app.route('/users/<uid>/rating_queue/', methods = ['GET'])
+@application.route('/users/<uid>/rating_queue/', methods = ['GET'])
 def do_rating_queue(uid):
     user = db.session.query(User).get(uid)
     if user is None:
@@ -164,7 +164,7 @@ def outfit_dict_for_rating_queue(rating):
 #      , 'comment': <String>
 #      , 'reviewer_id': <String>
 #      }
-@app.route('/outfits/<oid>/ratings/', methods = ['GET','POST'])
+@application.route('/outfits/<oid>/ratings/', methods = ['GET','POST'])
 def do_ratings(oid):
     out = db.session.query(Outfit).get(oid)
     if out is None:
@@ -187,9 +187,6 @@ def do_ratings(oid):
                     })
 
 
-
-
-
 if __name__ == '__main__':
-    db.init_app(app)
-    app.run(debug=True)
+    db.init_app(application)
+    application.run(debug=True)
