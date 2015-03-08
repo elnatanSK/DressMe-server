@@ -190,4 +190,5 @@ def do_ratings(oid):
 
 if __name__ == '__main__':
     db.init_app(application)
+    db.create_all()
     application.run(debug=True)
