@@ -48,7 +48,7 @@ class Outfit(db.Model):
     owner_id = db.Column(db.Text, db.ForeignKey('users.user_id'),
         primary_key = False)
     outfit_id = db.Column(db.Integer, primary_key = True)
-    image = db.Column(db.LargeBinary, unique=False)
+    image = db.Column(db.Text, unique=False)
     ratings = db.relationship('Rating', backref="outfit_id")
 
     def __init__(self, img, ratings=[]):
