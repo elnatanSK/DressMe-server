@@ -144,6 +144,22 @@ def do_outfits(uid):
                     'outfits': map(Outfit.to_dict, user.outfits)
                     })
 
+@app.route('/users/<uid>/rating_queue/', methods = ['GET'])
+def do_rating_queue(uid):
+    user = db.session.query(User).get(uid)
+    if user is None:
+        return "Not such user: %s" % uid, 300
+    if request.method == 'GET':
+        return jsonify({'reviewer_id': uid,
+            'outfits': map(outfit_dict_for_rating, user.rating_queue)
+            })
+
+def outfit_dict_for_rating(rating):
+    d = rating.outfit_id.to_dict()
+    del d['ratings']
+    return d
+
+
 # POST { 'score': <INT>
 #      , 'comment': <String>
 #      , 'reviewer_id': <String>
@@ -167,8 +183,8 @@ def do_ratings(oid):
         db.session.add(r)
         db.session.commit()
     return jsonify({'outfit_id': oid,
-                        'ratings': map(Rating.to_dict, out.ratings)
-                        })
+                    'ratings': map(Rating.to_dict, out.ratings)
+                    })
 
 
 
