@@ -5,7 +5,7 @@ import flask.json as json
 
 application = Flask(__name__)
 application.config['DEBUG'] = True
-application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(application)
 
 
@@ -126,7 +126,9 @@ def add_user():
         return "Added %s" % uid, 200
 
 #
-# POST {
+# POST { 'image' : bytes
+#        'friends': [id, ..., id]
+#       }
 #
 @application.route('/users/<uid>/outfits/', methods = ['GET','POST'])
 def do_outfits(uid):
@@ -137,9 +139,18 @@ def do_outfits(uid):
         pass
     elif request.method == 'POST':
         img = request.json['image']
+        friends = request.json['friends']
         o = Outfit(img)
         user.add_outfit(o)
         db.session.add(user)
+        for friend_id in friends:
+            friend = db.session.query(User).get(friend_id)
+            if friend is None:
+                continue
+            r = Rating(o)
+            friend.assign_rating(r)
+            db.session.add(friend)
+            db.session.add(r)
         db.session.commit()
     return jsonify({'user_id': uid,
                     'outfits': map(Outfit.to_dict, user.outfits)
@@ -156,6 +167,9 @@ def do_rating_queue(uid):
             })
 
 def outfit_dict_for_rating_queue(rating):
+    rating.assigned = True
+    db.session.add(rating)
+    db.session.commit()
     d = rating.outfit_id.to_dict()
     del d['ratings']
     return d
