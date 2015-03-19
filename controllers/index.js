@@ -16,4 +16,4 @@ router.get('/', function(req, res) {
  * expose the router we create so that we can access it from
  * the top-level app.js
  */
-module.exports = router
+module.exports = router;

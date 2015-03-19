@@ -14,12 +14,24 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;
 
 
+
+
+/*
+ * load app middleware
+ */
+app.use(require('./middlewares'));
+
+
+
+
 /*
  * Register Routes found in controllers
  *
  *      All routes are based at /api
  */
 app.use('/api', require('./controllers'));
+
+
 
 
 /*
